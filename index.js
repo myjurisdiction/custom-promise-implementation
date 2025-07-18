@@ -57,7 +57,9 @@ class AwesomePromise {
     });
   }
 
-  catch(onFail) {}
+  catch(onFail) {
+    return this.then(null, onFail);
+  }
 
   finally(callback) {}
 
@@ -108,14 +110,26 @@ class AwesomePromise {
   }
 }
 
-const delayed = new AwesomePromise((resolve) => {
+/************************** TEST CASES ************************************/
+
+// const delayed = new AwesomePromise((resolve) => {
+//   setTimeout(() => {
+//     resolve(100);
+//   }, 2000);
+// });
+
+// const immediate = new AwesomePromise((resolve) => {
+//   resolve("I love promises");
+// });
+
+// const immediateErr = new AwesomePromise((_, rej) => {
+//   rej("I failed immediately");
+// });
+
+const delayedErr = new AwesomePromise((_, rej) => {
   setTimeout(() => {
-    resolve(100);
+    rej("I failed after 2 seconds !!");
   }, 2000);
 });
 
-const immediate = new AwesomePromise((resolve) => {
-  resolve("I love promises");
-});
-
-delayed.then((val) => console.log('Resolved with:', val));
+delayedErr.catch((val) => console.log("RESULT:", val));
