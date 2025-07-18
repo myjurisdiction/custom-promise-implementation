@@ -39,7 +39,7 @@ class AwesomePromise {
           try {
             return res(onSuccessCallback(value));
           } catch (error) {
-            return rej(err);
+            return rej(error);
           }
         },
         onFail: function (err) {
@@ -69,9 +69,9 @@ class AwesomePromise {
     return new AwesomePromise((res, rej) => {
       let wasRejected, value;
       this.then(
-        (value) => {
+        (val) => {
           wasRejected = false;
-          value = value;
+          value = val;
           try {
             return callback();
           } catch (err) {
@@ -161,15 +161,89 @@ class AwesomePromise {
 //   rej("I failed immediately");
 // });
 
-const delayedErr = new AwesomePromise((_, rej) => {
-  setTimeout(() => {
-    rej("I failed after 2 seconds !!");
-  }, 2000);
-});
+// const delayedErr = new AwesomePromise((_, rej) => {
+//   setTimeout(() => {
+//     rej("I failed after 2 seconds !!");
+//   }, 2000);
+// });
 
 // delayedErr.catch((val) => console.log("RESULT:", val));
 
-delayedErr
-  .finally(() => console.log("Cleanup"))
-  .then((val) => console.log("Resolved:", val))
-  .catch((err) => console.log("Rejected:", err));
+// delayed
+//   .finally(() => console.log("Cleanup"))
+//   .then((val) => console.log("Resolved:", val))
+//   .catch((err) => console.log("Rejected:", err));
+
+// const testPromiseWithLateResolve = new AwesomePromise((res, rej) => {
+//   setTimeout(() => {
+//     res("Promise 1 is resolved");
+//   }, 1000);
+// });
+
+// testPromiseWithLateResolve.then((val) => {
+//   console.log(val);
+// });
+
+// const testPromiseWithLateReject = new AwesomePromise((res, rej) => {
+//   setTimeout(() => {
+//     rej("Promise 2 is rejected");
+//   }, 1000);
+// });
+
+// testPromiseWithLateReject
+//   .then((val) => {
+//     console.log(val);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
+
+// const testPromiseWithRejectFinally = new AwesomePromise((res, rej) => {
+//   setTimeout(() => {
+//     rej("Promise 2 is rejected");
+//   }, 1000);
+// });
+
+// testPromiseWithRejectFinally
+//   .finally(() => {
+//     console.log("finally called");
+//   })
+//   .catch((err) => {
+//     console.log("value rejected after finally", err);
+//   });
+
+// const testPromiseWithEarlyResolve = new AwesomePromise((res, rej) => {
+//   res("Promise 3 is resolved early");
+// });
+
+// setTimeout(() => {
+//   testPromiseWithEarlyResolve.then((val) => {
+//     console.log(val);
+//   });
+// }, 3000);
+
+// const p = new AwesomePromise((resolve) => {
+//   setTimeout(() => {
+//     resolve(100);
+//   }, 1000);
+// });
+
+// p.then((val) => {
+//   console.log("Resolved:", val);
+// })
+//   .catch((err) => {
+//     console.log("Caught:", err);
+//   })
+//   .finally(() => {
+//     console.log("Cleanup done");
+//   });
+
+new AwesomePromise((res) => res(1))
+  .then((val) => val + 1)
+  .then((val) => console.log("chained val:", val)); // should log 2
+
+new AwesomePromise((res) => res(10))
+  .then(() => {
+    throw new Error("Oops");
+  })
+  .catch((err) => console.log("caught error:", err.message));
