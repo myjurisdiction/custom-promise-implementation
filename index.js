@@ -61,7 +61,42 @@ class AwesomePromise {
     return this.then(null, onFail);
   }
 
-  finally(callback) {}
+  //   Finaly,
+  //Registers a callback that runs regardless of whether the promise is fulfilled or rejected.
+  //Does not modify the resolved/rejected value unless the callback() itself throws an error.
+  // Returns a new promise that resolves/rejects with the same value/error as the original promise after the callback has run.
+  finally(callback) {
+    return new AwesomePromise((res, rej) => {
+      let wasRejected, value;
+      this.then(
+        (value) => {
+          wasRejected = false;
+          value = value;
+          try {
+            return callback();
+          } catch (err) {
+            return rej(err);
+          }
+        },
+        (err) => {
+          wasRejected = true;
+          value = err;
+
+          try {
+            return callback();
+          } catch (err) {
+            return rej(err);
+          }
+        }
+      ).then(() => {
+        // this is called after the callback() finishes (successfully)
+        if (wasRejected) {
+          return rej(value);
+        }
+        return res(value);
+      });
+    });
+  }
 
   _updatePromiseState(value, state) {
     queueMicrotask(() => {
@@ -132,4 +167,9 @@ const delayedErr = new AwesomePromise((_, rej) => {
   }, 2000);
 });
 
-delayedErr.catch((val) => console.log("RESULT:", val));
+// delayedErr.catch((val) => console.log("RESULT:", val));
+
+delayedErr
+  .finally(() => console.log("Cleanup"))
+  .then((val) => console.log("Resolved:", val))
+  .catch((err) => console.log("Rejected:", err));
